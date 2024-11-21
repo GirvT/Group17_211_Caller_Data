@@ -1,0 +1,196 @@
+---
+title: "project_data_sets"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+```{r} 
+library(tidyverse)
+library(ggplot2)
+```
+## Links for data https://open.toronto.ca/catalogue/?vocab_civic_issues=Poverty%20reduction&n=1&sort=score%20desc
+```{r}
+callerData=read_csv("data/211_CallerData.csv")
+shelter_data=read_csv("data/14100353.csv")
+shelter_2019 = read_csv('data/shelter2019.csv')
+
+tor_data=read_csv('data/TorontoMeasureData.csv')
+
+```
+
+```{r}
+callerData%>%filter(Level1Name=="Basic Needs")%>% 
+  filter(NeedWasMet==FALSE)%>%group_by(Level3Name)
+  
+```
+
+
+finds the occuapncy rate of variious sheleters across the city 
+```{r}
+full_shelter=shelter_2019%>%filter(OCCUPANCY==CAPACITY)%>%
+  group_by(OCCUPANCY_DATE,SHELTER_NAME)%>%distinct(OCCUPANCY_DATE,SHELTER_NAME,.keep_all = TRUE)%>%ungroup()%>%
+  group_by(SHELTER_NAME,SHELTER_POSTAL_CODE)%>%summarise(days_full=n())%>%arrange(desc(days_full))
+
+full_shelter
+
+full_shelter%>%ungroup()%>%summarise(Avg_days_full=(mean(days_full)))
+
+```
+visualiztion of previous graph(will fix later)
+```{r}
+full_shelter%>%ggplot(aes(x=SHELTER_POSTAL_CODE,y=days_full,fill=SHELTER_POSTAL_CODE),size=y)+geom_bar(stat="identity")+ coord_flip()
+```
+
+
+SOcial housing demand for years 2017+ seperated quartely 
+```{r}
+
+tor_data%>%filter(Year>=2017)%>%
+  filter(str_detect(str_to_lower(`Measure Name`),pattern="size"))%>%group_by(Year)%>%
+  unite(Time,c(Period,Year),sep="-")
+
+
+tor_data%>%filter(Year>=2017)%>%
+  filter(str_detect(str_to_lower(`Measure Name`),pattern="size"))%>%group_by(Year)%>%
+  unite(Time,c(Period,Year),sep="-")%>%
+  ggplot(aes(x=Time,y=Value,group=1))+geom_line(stat="identity")+labs(title="Wait list Social Housing")
+
+tor_data%>%filter(Year>=2017)%>%
+  filter(str_detect(str_to_lower(`Measure Name`),pattern="size"))%>%group_by(Year)%>%
+  unite(Time,c(Period,Year),sep="-")%>%
+  ggplot(aes(x=Time,y=Value,group=1))+geom_bar(stat="identity")+labs(title="Wait list Social Housing")
+
+```
+
+SOcial housing demand for years by year from 2007+
+```{r}
+
+tor_data%>%filter(str_detect(str_to_lower(`Measure Name`),pattern="size"))%>%
+  group_by(Year)%>%
+  summarise(total_size=sum(Value))
+
+
+tor_data%>%filter(str_detect(str_to_lower(`Measure Name`),pattern="size"))%>%
+  group_by(Year)%>%
+  summarise(total_size=sum(Value))%>%
+  ggplot(aes(x=Year,y=total_size,group=1))+geom_line()+labs(title="Wait list Social Housing")
+
+
+tor_data%>%filter(str_detect(str_to_lower(`Measure Name`),pattern="size"))%>%
+  group_by(Year)%>%
+  summarise(total_size=sum(Value))%>%
+  ggplot(aes(x=Year,y=total_size,group=1))+geom_bar(stat="identity")+labs(title="Wait list Social Housing")
+
+```
+CONSLUSION: starting is staring to tackle this issue
+
+
+
+Looking at food bank use buy individuals for years 2007+ (might be helpful)
+```{r}
+tor_data%>% filter(str_detect(str_to_lower(`Measure Name`),pattern="food"))%>%
+  group_by(Year)%>%summarise(total_usage=sum(Value))
+ 
+
+
+
+
+tor_data%>% filter(str_detect(str_to_lower(`Measure Name`),pattern="food"))%>%
+  group_by(Year)%>%summarise(Total_usage=sum(Value))%>%
+  ggplot(aes(x=Year,y=Total_usage,group=1))+geom_line(stat="identity")+labs(title="Food bank Usage")
+
+tor_data%>% filter(str_detect(str_to_lower(`Measure Name`),pattern="food"))%>%
+  group_by(Year)%>%summarise(Total_usage=sum(Value))%>%
+  ggplot(aes(x=Year,y=Total_usage,group=1))+geom_bar(stat="identity")+labs(title="Food bank Usage")
+
+```
+
+looking at shelter use by individuals for years 2017+(looked at quarterly)
+```{r}
+tor_data%>%filter(Year>=2017)%>%
+  filter(str_detect(str_to_lower(`Measure Name`),pattern="singles"))%>%group_by(Year)%>%
+  unite(Time,c(Period,Year),sep="-")
+
+tor_data%>%filter(Year>=2017)%>%
+  filter(str_detect(str_to_lower(`Measure Name`),pattern="size"))%>%group_by(Year)%>%
+  unite(Time,c(Period,Year),sep="-")%>%
+   ggplot(aes(x=Time,y=Value,group=1))+geom_line(stat="identity")+labs(title="Individuals Shelter Use")
+
+tor_data%>%filter(Year>=2017)%>%
+  filter(str_detect(str_to_lower(`Measure Name`),pattern="size"))%>%group_by(Year)%>%
+  unite(Time,c(Period,Year),sep="-")%>%
+   ggplot(aes(x=Time,y=Value,group=1))+geom_bar(stat="identity")+labs(title="Individuals Shelter Use")
+
+
+```
+
+looking at shelter use by individuals for years 2007(looked at anually)
+```{r}
+tor_data%>%filter(str_detect(str_to_lower(`Measure Name`),pattern="singles"))%>%
+  group_by(Year)%>%
+  summarise(total_usage=sum(Value))
+  
+tor_data%>%filter(str_detect(str_to_lower(`Measure Name`),pattern="singles"))%>%
+  group_by(Year)%>%
+  summarise(total_usage=sum(Value))%>%
+   ggplot(aes(x=Year,y=total_usage,group=1))+geom_line(stat="identity")+labs(title="Individuals Shelter Use")
+
+
+tor_data%>%filter(str_detect(str_to_lower(`Measure Name`),pattern="singles"))%>%
+group_by(Year)%>%
+summarise(total_usage=sum(Value))%>%
+ggplot(aes(x=Year,y=total_usage,group=1))+geom_bar(stat="identity")+labs(title="Individuals Shelter Use")
+
+```
+USEFUL DATA FOR OUR TOPIC
+
+
+looking at shelter use by FAmilies for years 2017(looked at quarterly)(can look at oher years if needed to dectef if there is the same pattern)
+```{r}
+
+tor_data%>%filter(Year>=2017)%>%
+  filter(str_detect(str_to_lower(`Measure Name`),pattern="families"))%>%group_by(Year)%>%
+  unite(Time,c(Period,Year),sep="-")
+
+
+tor_data%>%filter(Year>=2017)%>%
+  filter(str_detect(str_to_lower(`Measure Name`),pattern="families"))%>%group_by(Year)%>%
+  unite(Time,c(Period,Year),sep="-")%>%
+   ggplot(aes(x=Time,y=Value,group=1))+geom_line(stat="identity")+labs(title="Family Shelter Use")
+
+
+tor_data%>%filter(Year>=2017)%>%
+  filter(str_detect(str_to_lower(`Measure Name`),pattern="families"))%>%group_by(Year)%>%
+  unite(Time,c(Period,Year),sep="-")%>%
+   ggplot(aes(x=Time,y=Value,group=1))+geom_bar(stat="identity")+labs(title="Family Shelter Use")
+
+```
+
+looking at shelter use by FAMILIES for years 2007(looked at anually)
+```{r}
+
+tor_data%>%filter(str_detect(str_to_lower(`Measure Name`),pattern="families"))%>%
+  group_by(Year)%>%
+  summarise(total_usage=sum(Value))
+
+
+tor_data%>%filter(str_detect(str_to_lower(`Measure Name`),pattern="families"))%>%
+  group_by(Year)%>%
+  summarise(total_usage=sum(Value))%>%
+   ggplot(aes(x=Year,y=total_usage,group=1))+geom_line(stat="identity")+labs(title="Family Shelter Use")
+
+
+tor_data%>%filter(str_detect(str_to_lower(`Measure Name`),pattern="families"))%>%
+group_by(Year)%>%
+summarise(total_usage=sum(Value))%>%
+ggplot(aes(x=Year,y=total_usage,group=1))+geom_bar(stat="identity")+labs(title="Family Shelter Use")
+
+
+```
+
+
+WILL want futher investigation as why the dramatic increase in the last 2 yrs(my guess is the rising house market, and wages have not kept up with the inflation rate(will need to confirm later))

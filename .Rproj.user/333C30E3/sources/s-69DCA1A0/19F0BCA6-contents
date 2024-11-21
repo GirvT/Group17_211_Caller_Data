@@ -1,0 +1,149 @@
+---
+title: "STAA57 - WorkSheet 14"
+author: 'Name:    , ID#:   '
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+***
+
+**Goal**: Practice with simple linear regression.
+
+
+[Natural Resources Canada](https://www.nrcan.gc.ca/energy/efficiency/transportation/21008) publishes fuel consumption and CO2 emissions ratings for all cars sold in Canada; you can find this information on new car stickers like this one:
+
+![](img/enerGuide.PNG)
+
+The relevant data are available through the Gov't of Canada's [Open Data portal](https://open.canada.ca/data/en/dataset/98f1a129-f628-4ce4-b24d-6f16bf24dd64). The purpose of this exercise is to model fuel consumption based on engine characteristics. You can load the data using:
+
+```{r, message=FALSE}
+library(tidyverse)
+fcr = read_csv("../data/2018 Fuel Consumption Ratings.csv") %>% 
+  mutate( FUEL = factor( FUEL, levels = c("X", "Z", "D", "E", "N"), 
+         labels = c("Regular", "Premium", "Diesel", "Ethanol", "Nat Gas")) )
+```
+You will try to model fuel consumption based on engine size.
+
+
+1. Recreate the following plot.
+
+![](./img/ENGINEvsCO2byFUEL.PNG)
+
+```{r}
+fcr %>% ggplot(aes(x = ENGINE_SIZE, y = CO2_EMISSIONS, col = FUEL)) + 
+  geom_jitter() + 
+  ggsave("./img/ENGINEvsCO2byFUEL.PNG", width = 5, height = 3)
+```
+
+
+2. Keep only vehicles that use gasoline (either *Regular* or *Premium*).
+```{r}
+fcr_gsln = fcr %>% filter( FUEL %in% c("Regular", "Premium"))
+```
+Fit a linear regression model for CO2 emissions (in gr/km) based on engine size (in L). Create a scatteplot of the data together with the regression line.
+
+
+```{r}
+lm_out = lm( CO2_EMISSIONS ~ ENGINE_SIZE, data = fcr_gsln)
+fcr_gsln %>% ggplot( aes(x = ENGINE_SIZE, y = CO2_EMISSIONS)) + 
+  geom_point() + geom_smooth(method = "lm", se = F)
+```
+
+
+3. Check the model parameters to answer the following questions: 
+a) How much do CO2 emissions increase, on average, for an additional litre of engine size? 
+b) What percent of CO2 emissions variability can be attributed to differences in engine size?
+c) What is the strandard deviation of the errors around the regression line?
+
+
+```{r}
+library(broom)
+tidy(lm_out)
+glance(lm_out)
+```
+
+a) CO2 emissions increase by 36.17598 g/km for each additional 1L in engine displacement. ($\beta$ coefficient)
+b) 71.98149% of CO2	emissions variability can be attributed to engine size differences.
+c) The standard deviation around the regression line is 30.14678 g/km. 
+
+4. Assume a new car is being launched with a 4.2L engine. Create a prediction and approximate 95% prediction *interval* for the CO2 emissions of the new car. 
+
+```{r}
+sigma = glance(lm_out) %>% pull(sigma)
+library(modelr)
+tibble( ENGINE_SIZE = 4.2 ) %>% 
+  add_predictions(lm_out) %>% 
+  mutate( upper = pred + 2*sigma, 
+          lower = pred - 2*sigma )
+
+# alternatively, can use predict() function
+
+predict( lm_out, tibble( ENGINE_SIZE = 4.2 ), 
+         interval = "prediction" ) %>% as_tibble()
+
+```
+
+5. Consider only the three manufacturers (`MAKE`): FORD, HONDA, and VOLKSWAGEN. Recreate the following CO2 emissions vs Engine Size scatterplot, overlaid with the regression lines and  *confidence* bands for each manufacturer. Which manufacturer seems to be producing the most efficient cars? Do the differences *look* statistically significant? Justify your answer.
+
+![](img/CO2_3MAKE.PNG)
+
+```{r}
+fcr_gsln %>% 
+  filter( MAKE %in% c("HONDA","FORD", "VOLKSWAGEN")) %>% 
+  ggplot(aes( x = ENGINE_SIZE, y = CO2_EMISSIONS, col = MAKE)) +
+  geom_jitter() + geom_smooth( method = "lm") + 
+  ggsave("img/CO2_3MAKE.PNG", width = 5, height = 3)
+```
+
+HONDA seems to be producing the most efficient cars, since they have the lowest average CO2 emissions accross their range of engine sizes. The differences seem to be statistically significant, since there confidence bands of the lines do not overlap, especially for smaller displacements (<2L).
+
+6. Create a prediction interval for a new HONDA car with a 4.2L engine (i.e. using HONDA data only).
+
+```{r}
+fcr_gsln %>% filter( MAKE == "HONDA" ) %>% 
+  lm( CO2_EMISSIONS ~ ENGINE_SIZE, data = .) %>% 
+  predict( tibble( ENGINE_SIZE = 4.2 ), interval = "prediction")
+```
+
+7. Instead of using regression, we could have treated each engine size as a *separate category* and fitted an ANOVA model; the side-by-side boxplots below demonstrate this approach. 
+
+```{r}
+fcr %>% filter( FUEL %in% c("Regular", "Premium")) %>% 
+  ggplot(aes( x = ENGINE_SIZE, y = CO2_EMISSIONS)) +
+  geom_boxplot( aes(group = ENGINE_SIZE)) + geom_smooth( method = "lm")
+```
+
+Answer the following questions:
+a) How many parameters (group means) would you have to estimate with the ANOVA approach?
+b) Which approach, ANOVA or linear regression, is more *flexible* for describing average CO2 emissions at different engine sizes? Justify your answer.
+c) Based on the plot, do you think the two approaches are very different? Justify your answer.
+d) Could you use the ANOVA model to predict the CO2 emissions for a 4.2L engine? Justify your answer.
+
+
+a) We would need 40 parameterrs (group means), one for each distinct ENGINE_SIZE value. 
+```{r}
+fcr_gsln %>% distinct(ENGINE_SIZE) %>% dim_desc() 
+```
+b) ANOVA is more flexible, since every size can have its own, *independent* avg CO2 emissions. In regression, all avg CO2 emissions must lie on a straight line.
+c) It seems that both approaches give similar results, since the boxplot medians lie very close to the regression line.
+d) Since we haven't observed 4.2L in our data, we couldn't use ANOVA (there is no group at that size).
+
+8. Below is a plot of the *combined* city/highway fuel consumption (`COMB`, in L/100km), versus CO2 emissions (in g/km). It seems there is an almost perfect relationship between the two, which implies that emissions are almost exlusively determined by how much gas is used. 
+```{r}
+fcr_gsln %>% ggplot(aes(x = COMB, y = CO2_EMISSIONS)) + geom_point()
+```
+
+Estimate the amount of CO2 (in g) emitted by burning 1L of gasoline, by fitting an *appropriate* regression model to the data.
+
+
+```{r}
+fcr_gsln %>% 
+  mutate(CO2_EMISSIONS = 100*CO2_EMISSIONS ) %>% 
+  # modify emissions to g/100km (instead of g/km)
+  lm( CO2_EMISSIONS ~ COMB, data = .) %>% 
+  tidy() %>% filter( term == "COMB") %>% select(estimate)
+```
+
+1L of gasoline produces 2.344kg of CO2 (see also [here](https://www.nrcan.gc.ca/sites/www.nrcan.gc.ca/files/oee/pdf/transportation/fuel-efficient-technologies/autosmart_factsheet_6_e.pdf))
+

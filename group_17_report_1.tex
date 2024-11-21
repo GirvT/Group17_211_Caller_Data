@@ -1,0 +1,659 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={STAA57 W20 Final Project Report},
+  pdfauthor={Group \#17L Girvan Tse, Edmond Lee, Brandom Lam},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{STAA57 W20 Final Project Report}
+\author{Group \#17L Girvan Tse, Edmond Lee, Brandom Lam}
+\date{}
+
+\begin{document}
+\maketitle
+
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+\hypertarget{description-of-report}{%
+\subsubsection{Description of Report}\label{description-of-report}}
+
+~ This report wants to glean insights into the emergency shelter
+situation in Toronto using data. At its core we will be asking two main
+questions: ``How operational are emergency shelters?'' and `What
+influences emergency shelter usage?'. We happen to pick this topic
+because when looking into 211 Caller Data we found that emergency
+shelters contained a lot of calls and unsuccessful resolutions. It
+however wasn't the most numerous in terms of number of calls nor contain
+the most unsuccessful resolutions out of all the categories so we
+thought this would make a good middle ground topic that isn't discussed
+as much.
+
+\hypertarget{what-is-an-emergency-shelter}{%
+\subsubsection{What is an emergency
+shelter?}\label{what-is-an-emergency-shelter}}
+
+~ An emergency shelter is defined as a facility that's used to house
+residences temporarily for emergency situations. Common inhabitants of
+shelters include both individuals and families. The reason of use may
+vary, but common rationale for using the shelters usually involve
+fleeing a dangerous situation such as: natural/ man-made disaster,
+domestic/sexual violence and abuse. In emergency situations such as
+extreme cold or rain, some of these shelters operate as warming centres
+for the homeless should they have the capacity to do so. The facilities
+provide various accommodations for residents including beds, meals,
+showers, counselling, and referral to: legal, health, and employment
+services.
+
+\hypertarget{who-is-the-demographic-of-an-emergency-shelter}{%
+\subsubsection{Who is the demographic of an emergency
+shelter?}\label{who-is-the-demographic-of-an-emergency-shelter}}
+
+~ The demographic of the emergency shelters includes a wide range of
+people. These include both male/female adults/youth, and families of
+varying sizes. The shelters are usual portioned off by sector to
+accommodate the various residence. They have spaces that are for men,
+women, youth, co-ed, families, and those with more specific/ sensitive
+needs such as victims of abuse.
+
+\hypertarget{data}{%
+\subsection{Data}\label{data}}
+
+\hypertarget{caller-data}{%
+\subsubsection{211 Caller Data}\label{caller-data}}
+
+\hypertarget{usage}{%
+\paragraph{Usage}\label{usage}}
+
+~ Geographical, Caller Reason, Caller demographic, and Caller Gender
+data for emergency shelters
+
+\hypertarget{variables-and-observations}{%
+\paragraph{Variables and
+Observations}\label{variables-and-observations}}
+
+~ Level3Name ~ Category variable that helps us slice 211 caller data for
+emergency shelter\\
+\hspace*{0.333em} Level4Name ~ Category variable to help distinguish
+different reasons for calling in terms of emergency shelters\\
+\hspace*{0.333em} PostalArea ~ Postal Codes of Toronto\\
+\hspace*{0.333em} DateOfCall ~ Date of call\\
+\hspace*{0.333em} NeedWasMet ~ Boolean specifying if the needs of the
+caller were met\\
+\hspace*{0.333em} Demographics of Inquirer Age Category ~ Determines if
+caller is Youth, Adult, Order Adult, or Unknown\\
+\hspace*{0.333em} Demographics of Gender Age Category ~ Determines if
+caller is Male, Female, or Unknown
+
+\hypertarget{bias}{%
+\paragraph{Bias}\label{bias}}
+
+~ The PostalArea has a non-response bias. That is there is a large
+amount of calls that contain NULL in PostalArea
+
+\hypertarget{daily-shelter-occupancy}{%
+\subsubsection{Daily Shelter Occupancy}\label{daily-shelter-occupancy}}
+
+\hypertarget{link}{%
+\paragraph{Link}\label{link}}
+
+\url{https://open.toronto.ca/dataset/daily-shelter-occupancy/}
+
+\hypertarget{usage-1}{%
+\paragraph{Usage}\label{usage-1}}
+
+~ Geographical Data on the location of shelters as well as occupancy to
+calculate demographics and usage
+
+\hypertarget{variables-and-observations-1}{%
+\paragraph{Variables and
+Observations}\label{variables-and-observations-1}}
+
+~ OCCUPANCY\_DATE ~ Date of shelter operation\\
+\hspace*{0.333em} SHELTER\_NAME ~ Name of shelter\\
+\hspace*{0.333em} SHELTER\_ADDRESS ~ Address of shelter\\
+\hspace*{0.333em} SHELTER\_POSTAL\_CODE ~ postal code of shelter\\
+\hspace*{0.333em} SECTOR ~ Categorisation variable for different parts
+of any shelter\\
+\hspace*{0.333em} OCCUPANCY ~ The count of occupants in any shelter
+sector\\
+\hspace*{0.333em} CAPACITY ~ The count of available spaces in any
+shelter
+
+\hypertarget{bias-1}{%
+\paragraph{Bias}\label{bias-1}}
+
+~ There is possible bias towards families since they wouldn't be counted
+as a group, so a family group of 4 is not 1 entry but 4 in terms of the
+OCCUPANCY variable. Though it would still be hard to mangle the variable
+into a way that would could a single-family group since the number of
+members in a family can range from 2 to more.
+
+\hypertarget{toronto-postal-codes}{%
+\subsubsection{Toronto Postal Codes}\label{toronto-postal-codes}}
+
+\hypertarget{link-1}{%
+\paragraph{Link}\label{link-1}}
+
+\url{https://www.canadapost.ca/cpo/mc/personal/postalcode/fpc.jsf}
+
+\hypertarget{usage-2}{%
+\paragraph{Usage}\label{usage-2}}
+
+~ Converting Postcodes to City of Toronto Boroughs
+
+\hypertarget{variables-and-observations-2}{%
+\paragraph{Variables and
+Observations}\label{variables-and-observations-2}}
+
+~ Postcode ~ Postal Codes of Toronto\\
+\hspace*{0.333em} Borough ~ Boroughs of Toronto\\
+\hspace*{0.333em} Neighbourhoods ~ Neighbourhoods of Toronto
+
+\hypertarget{main-analysis}{%
+\subsection{Main Analysis}\label{main-analysis}}
+
+Here we'll break up the main questions into several sub questions.
+Namely the following two big questions.\\
+Also we'll start to use abbreviations to make the report more succinct\\
+ES = Emergency Shelter\\
+CD = 211 Caller Data (callerData)\\
+ESD = Emergency Shelter Data (shelterData)\\
+OC = Overcapacity\\
+OCR = Overcapacity Rate
+
+How functional are ESs?\\
+\hspace*{0.333em} 1.0 What are the ES trends?\\
+\hspace*{0.333em}\hspace*{0.333em} 1.0a Using CD\\
+\hspace*{0.333em}\hspace*{0.333em} 1.0b Using ESD\\
+\hspace*{0.333em} 1.1 Are callers able to reach ESs?\\
+\hspace*{0.333em} 1.2 Which regions are ESs in high demand?\\
+1.0 will tell us if ESs capacity is rising or falling. This would hinder
+operation of course as being OC or max capacity will hurt the delivery
+of the ES service. 1.1 will tell us if ESs are able to receive callers
+via the 211 line. 1.2 will tell us which region ESs callers ask about
+the most.
+
+What influences ES usage?\\
+\hspace*{0.333em} 2.1 Does borough influence number of calls in a day?\\
+\hspace*{0.333em} 2.2 Does sector of ES user influence OCR?\\
+\hspace*{0.333em} 2.3 Is ES usage seasonal (monthly) ?\\
+\hspace*{0.333em} 2.4 Can we classify shelters as OC based solely on
+their load?\\
+2.1, 2.2, 2.3 are each different metrics that could influence ES usage.
+2.4 will tell us which shelters are at max usage in some sector based on
+usage.
+
+\hypertarget{how-functional-are-ess}{%
+\subsubsection{How functional are ESs?}\label{how-functional-are-ess}}
+
+\hypertarget{what-are-the-es-trends}{%
+\paragraph{1.0 : What are the ES trends?}\label{what-are-the-es-trends}}
+
+\hypertarget{method}{%
+\subparagraph{Method}\label{method}}
+
+~ For this topic we can look at both our data sets to see if we can find
+trends. We'll use our CD see if the frequency of calls increases over
+time using different grouping views. Our grouping views will consist of
+daily, weekly, and monthly. The reason why we'll exclude yearly is that
+the data abstraction will be too much to obtain any information from.
+
+~ We'll split the analysis into two sections, 1.0a and 1.0b for CD and
+ESD respectively. Doing this we can get two different measures on
+increasing emergency shelter usage. In 1.0a we'll be observing if the
+trend for 211 calls increases or decreases over the years. In 1.0b we'll
+observe two variables: overall load and OCR. Overall load will consist
+of the sum of all occupants over capacity to calculate how full a
+shelter is. OCR will consist of overall mean at which the shelters are
+at or over capacity.
+
+\hypertarget{analysis}{%
+\subparagraph{Analysis}\label{analysis}}
+
+\hypertarget{a-cd}{%
+\subparagraph{1.0a CD}\label{a-cd}}
+
+Here we'll perform a simple summation of the data to see how it trend
+weekly, this should give us a pretty granular but not too granular view.
+\includegraphics{group_17_report_1_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\hypertarget{b-esd}{%
+\subparagraph{1.0b ESD}\label{b-esd}}
+
+Done similarly to the 1.0a, however this time we'll measure both load
+(occupancy over capacity) and OCR (mean of sectors OC).
+\includegraphics{group_17_report_1_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\hypertarget{conclusion}{%
+\subparagraph{Conclusion}\label{conclusion}}
+
+Here we should consider the bias in 1.0b that OCR is the mean of sectors
+that are OC in a shelter, but not all shelters contain the same number
+of sectors. This means we might see more variance in OCR. However
+looking at 1.0a and 1.0b we can conclude there is no trend. In both
+graphs we can see that the data trends towards a centre line
+(considering the bias for OCR).
+
+\hypertarget{is-every-caller-able-to-reach-a-nearby-es}{%
+\paragraph{1.1 Is every caller able to reach a nearby
+ES?}\label{is-every-caller-able-to-reach-a-nearby-es}}
+
+\hypertarget{method-1}{%
+\subparagraph{Method}\label{method-1}}
+
+Here we'll take the CD and do a check to see if it matches a postal code
+of any shelter, if it is then we can consider that the user is able to
+reach an ES (regardless of if it is full/OC or not)
+
+\hypertarget{analysis-1}{%
+\subparagraph{Analysis}\label{analysis-1}}
+
+Here we'll simply pull all FSA codes of shelters in Toronto and filter
+all FSA codes of callers not in the shelters FSA. If we find any calls
+that exist in FSA that aren't in a shelters FSA we can summarise those.
+
+\begin{verbatim}
+## # A tibble: 47 x 2
+##    PostalArea calls
+##    <chr>      <int>
+##  1 M4J           13
+##  2 M6N            8
+##  3 M4L            7
+##  4 M6R            7
+##  5 M9C            5
+##  6 M1J            4
+##  7 M1N            4
+##  8 M3N            4
+##  9 M4A            4
+## 10 M6S            4
+## # ... with 37 more rows
+\end{verbatim}
+
+Using the sum of callers without a shelter in their FSA we can get a
+proportion
+
+\begin{verbatim}
+## [1] 0.4127907
+\end{verbatim}
+
+That is 41.28\% of callers (with geographical data) do not have a
+shelter in their FSA
+
+\hypertarget{conclusion-1}{%
+\subparagraph{Conclusion}\label{conclusion-1}}
+
+Here we should consider that there is a vocal minority in geographical
+data. Converting the postal codes to boroughs yields callers are mainly
+unable to reach shelters exactly in the East York region. Though
+considering the bias we cannot say that with certainty that most callers
+unable to reach shelters are in the EY region.
+
+\hypertarget{which-regions-are-ess-in-high-demand}{%
+\paragraph{1.2 Which regions are ESs in high
+demand?}\label{which-regions-are-ess-in-high-demand}}
+
+\hypertarget{method-2}{%
+\subparagraph{Method}\label{method-2}}
+
+Here we can do an inner join on postal code; this will yield us the
+caller's borough. After that we do a simple summarise on the data to
+yield the total number of calls over the years for ESs. We can take the
+highest number of calls as the most in-demand region for ESs
+
+\hypertarget{analysis-2}{%
+\subparagraph{Analysis}\label{analysis-2}}
+
+We'll retrieve CD with geographical data and join our callerData with
+postalBorough to get our borough data from the calls. Then perform a
+summation to get the number of calls by borough.
+
+\begin{verbatim}
+## # A tibble: 10 x 2
+##    Borough          Calls
+##    <chr>            <int>
+##  1 Downtown Toronto   193
+##  2 Scarborough        112
+##  3 Etobicoke           97
+##  4 North York          93
+##  5 West Toronto        74
+##  6 Central Toronto     59
+##  7 York                40
+##  8 East Toronto        35
+##  9 East York           24
+## 10 Queen's Park         1
+\end{verbatim}
+
+\hypertarget{conclusion-2}{%
+\subparagraph{Conclusion}\label{conclusion-2}}
+
+We consider that the dataset contains non-response bias. Following our
+method and considering the data we take the top regions as the most
+in-demand regions then we can see that lots of callers are from the DT,
+Scarborough, North York and Etobicoke boroughs.
+
+\hypertarget{what-influences-es-usage}{%
+\subsubsection{What influences ES
+usage?}\label{what-influences-es-usage}}
+
+\hypertarget{does-borough-influence-number-of-calls-in-a-day}{%
+\paragraph{2.1: Does borough influence number of calls in a
+day?}\label{does-borough-influence-number-of-calls-in-a-day}}
+
+\hypertarget{method-3}{%
+\subparagraph{Method}\label{method-3}}
+
+We can use an independence test to see if the number of calls in a day
+is influenced by the borough. Specifically this will tell us on any
+given day if borough influences how many calls are received. We are
+specifically testing if the number of calls vary from borough to
+borough, or if it is standard across all boroughs. The assumption that
+is standard means we are assuming the need for ESs is the same across
+all boroughs while the alternate proposes the opposite.
+
+\hypertarget{analysis-3}{%
+\subparagraph{Analysis}\label{analysis-3}}
+
+Here we join ES with postalBorough to get boroughs. Summarising yields
+data we can perform an independence test on. We'll test number of calls
+in a day and borough to see if they're related.\\
+H0 : The borough and number of calls are not related\\
+Halt : The borough and number of calls are related\\
+We'll work with a 95\% confidence interval (and thus require p
+\textless= 0.05 to reject the null)
+
+\begin{verbatim}
+## 
+##  Approximative General Independence Test
+## 
+## data:  Calls by
+##   Borough (Central Toronto, Downtown Toronto, East Toronto, East York, Etobicoke, North York, Queen's Park, Scarborough, West Toronto, York)
+## maxT = 6.67, p-value < 1e-04
+## alternative hypothesis: two.sided
+\end{verbatim}
+
+\hypertarget{conclusion-3}{%
+\subparagraph{Conclusion}\label{conclusion-3}}
+
+Given that our p-value resulted in 0.0004 we can conclude that borough
+does influence our calls in a day. Likewise we can say that subsection
+1.2 is not a fluke and some boroughs recieve more calls/day than others.
+
+\hypertarget{does-sector-of-es-user-influence-ocr}{%
+\paragraph{2.2: Does sector of ES user influence
+OCR?}\label{does-sector-of-es-user-influence-ocr}}
+
+\hypertarget{method-4}{%
+\subparagraph{Method}\label{method-4}}
+
+Here we need to get the OCR of ESs, afterwards we'll need to do an
+independence test to see if sectors and OCR are related. This
+specifically will point out if some sectors are often OC, more so than
+others.
+
+\hypertarget{analysis-4}{%
+\subparagraph{Analysis}\label{analysis-4}}
+
+We can use shelter data like previously to get the OCR. The difference
+is now we'll use that in tandem with the factor SECTOR and an
+independence test.\\
+H0 : All sectors are equally likely to have OC issues\\
+Halt : Some sectors are more often OC than others\\
+We'll work with a 95\% confidence interval (and thus require p
+\textless= 0.05 to reject the null)
+
+\begin{verbatim}
+## 
+##  Approximative General Independence Test
+## 
+## data:  SECTOR by OC_RATE
+## maxT = 33.866, p-value < 1e-04
+## alternative hypothesis: two.sided
+\end{verbatim}
+
+\hypertarget{conclusion-4}{%
+\subparagraph{Conclusion}\label{conclusion-4}}
+
+Given that our p-value resulted in 0.0004 we can conclude that ES sector
+does influence OCR. Succinctly, some sectors are more often OC than
+other sectors. This means we should seek to expand ES housing for some
+sectors more than others.
+
+\hypertarget{is-es-usage-seasonal-monthly}{%
+\paragraph{2.3: Is ES usage seasonal (monthly)
+?}\label{is-es-usage-seasonal-monthly}}
+
+\hypertarget{method-5}{%
+\subparagraph{Method}\label{method-5}}
+
+This question will help us determine if shelter usage is affected by the
+month.
+
+\hypertarget{analysis-5}{%
+\subparagraph{Analysis}\label{analysis-5}}
+
+We can use shelter data like previously to get the OCR. The difference
+is now we'll use that in tandem with the factor SECTOR and an
+independence test.\\
+H0 : The month doesn't affect the ES load\\
+Halt : The month does affect the ES load\\
+We'll work with a 95\% confidence interval (and thus require p
+\textless= 0.05 to reject the null
+
+\begin{verbatim}
+## 
+##  Approximative General Independence Test
+## 
+## data:  MONTH by LOAD
+## Z = 7.9429, p-value < 1e-04
+## alternative hypothesis: two.sided
+\end{verbatim}
+
+\hypertarget{conclusion-5}{%
+\subparagraph{Conclusion}\label{conclusion-5}}
+
+Given that our p-value resulted in 0.0004 we can conclude that the month
+does affect ES load. However upon further inspection
+
+\begin{verbatim}
+## # A tibble: 12 x 2
+##    MONTH  LOAD
+##    <dbl> <dbl>
+##  1     1 0.938
+##  2     2 0.936
+##  3     3 0.936
+##  4     4 0.935
+##  5     5 0.926
+##  6     6 0.954
+##  7     7 0.964
+##  8     8 0.961
+##  9     9 0.956
+## 10    10 0.958
+## 11    11 0.941
+## 12    12 0.945
+\end{verbatim}
+
+It seems that June, July, August, September, and October have higher
+loads than the winter months. This goes against my intuition that cold
+weather would cause higher shelter load. Overall however we can see that
+the month does affect how much shelters are being used.
+
+\hypertarget{can-we-classify-shelters-as-regularly-oc-based-solely-on-their-load}{%
+\paragraph{2.4: Can we classify shelters as regularly OC based solely on
+their
+load?}\label{can-we-classify-shelters-as-regularly-oc-based-solely-on-their-load}}
+
+\hypertarget{method-6}{%
+\subparagraph{Method}\label{method-6}}
+
+Here we will use threshold classification to find a classifer that will
+tell us if a shelter is OC based solely on its load. This is a useful
+metric because it'll let us have a good metric for if a shelter should
+expand or not. I.e. if our classifer is the best at \textless{} 0.7 load
+we can recommend any shelter with an overall load \textless= 0.7 that
+they should expand their services.
+
+\hypertarget{analysis-6}{%
+\subparagraph{Analysis}\label{analysis-6}}
+
+Here we'll graph our shelter data to see what a good initial classifer
+would be. From the graph we can determine that 0.895 is a pretty good
+divide between OC and high load.\\
+\includegraphics{group_17_report_1_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+To confirm this we can make a crosstab with our data comparing our guess
+and the real state of the ESs
+
+\begin{verbatim}
+##         OC_REAL
+## OC_GUESS  TRUE FALSE   Sum
+##    TRUE   8180  1287  9467
+##    FALSE   541   621  1162
+##    Sum    8721  1908 10629
+\end{verbatim}
+
+Doing a small calculation for accuracy yields
+
+\begin{verbatim}
+## [1] 0.8280177
+\end{verbatim}
+
+Plotting a ROC curve shows that out our model is moderately accurate
+able to reach about at best a balanced 75\% precision/75\% recall
+\includegraphics{group_17_report_1_files/figure-latex/unnamed-chunk-15-1.pdf}
+
+\begin{verbatim}
+## Area under the curve: 0.8546
+\end{verbatim}
+
+\hypertarget{conclusion-6}{%
+\subparagraph{Conclusion}\label{conclusion-6}}
+
+The classifer can't achive above a 75\% precision/75\% recall. For this
+given context of ESs I would say this isn't accurate enough. Since a
+shelter being OC can mean life or death for people using ESs.
+
+\hypertarget{summary}{%
+\subsection{Summary}\label{summary}}
+
+Here we'll restate and answer all the questions using insight gleaned
+from the data. I'll add a short answer to the subsections then answer
+the main question.
+
+\hypertarget{how-functional-are-ess-1}{%
+\subsubsection{How functional are ESs?}\label{how-functional-are-ess-1}}
+
+~ 1.0 What are the ES trends? ~~~ Stagnant\\
+\hspace*{0.333em}\hspace*{0.333em} 1.0a Using CD\\
+\hspace*{0.333em}\hspace*{0.333em} 1.0b Using ESD\\
+\hspace*{0.333em} 1.1 Are callers able to reach ESs? ~~~ Yes considering
+bias, No without considering bias\\
+\hspace*{0.333em} 1.2 Which regions are ESs in high demand? ~~~ Downtown
+Toronto
+
+Using the subsections we can see that ESs in Toronto are functional.
+They serve their purpose well, but the stagnant trend of ESs is
+concerning. This means the usage of ESs may not be increasing but is
+also not decreasing as well, that is there is no action being taken to
+actively reduce the amount that ESs are being used. We can see that
+(vocal minority) callers aren't able to shelters in their FSA (mainly
+East York) but they are a very small fraction of callers when compared
+to the most in demands areas (13\textasciitilde{} vs
+193\textasciitilde).
+
+\hypertarget{what-influences-es-usage-1}{%
+\subsubsection{What influences ES
+usage?}\label{what-influences-es-usage-1}}
+
+~ 2.1 Does borough influence number of calls in a day? ~~~ Yes\\
+\hspace*{0.333em} 2.2 Does sector of ES user influence OCR? ~~~ Yes\\
+\hspace*{0.333em} 2.3 Is ES usage seasonal (monthly) ? ~~~ Yes\\
+\hspace*{0.333em} 2.4 Can we classify shelters as regularly OC based
+solely on their load? ~~~ No
+
+Here we can confirm a few factors (namely borough, month) that influence
+usage. Another factor (namely demographic) that influences OCR. We know
+some factors that influences ES usage, but we can't say we know all
+factors that do. So the takeaway here would be that borough of caller,
+month of the year do influence the usage of shelters so they should
+adapt to those factors. As well as we do know certain sectors in ESs
+need expanding as some are often OC than others. Finally we can say that
+you can make a decent classifier for load to determine OCR. As a
+recommendation system it would work fine.
+
+\hypertarget{appendix}{%
+\subsection{Appendix}\label{appendix}}
+
+\hypertarget{footnote-for-professor}{%
+\subsubsection{Footnote for Professor}\label{footnote-for-professor}}
+
+Girvan Here\\
+I tried using ggmaps but found that in 2018 google changed the
+requirement to use the API to a private key from google cloud. If I
+wanted to put a ggmap into the report, I'd need to also publicly put in
+my private key for my google account in the R code to allow readers to
+run the report. Also tried using the maps and sp package but they have
+their own problems (maps is doesn't contain up to date Canadian
+political borders; sp uses GADM which takes ages to render).
+
+Also I tried using PCCF but found it was too detailed and unwieldly (it
+seems to be more compatible for SAS) for an FSA -\textgreater{} Borough
+conversion. I do understand however that PCCF is a more academic source
+(and frankly better than just pulling postal codes by hand.)
+
+\end{document}

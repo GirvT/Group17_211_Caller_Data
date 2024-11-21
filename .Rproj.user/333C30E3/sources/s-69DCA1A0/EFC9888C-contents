@@ -1,0 +1,146 @@
+---
+title: "STAA57 W19 - Project Proposal"
+author:  'Group 17 (Girvan Tse, Edmond Lee, Brandon Lam, Jinle Sun)'
+output:
+  html_document:
+    df_print: paged
+editor_options: 
+  chunk_output_type: inline
+---
+
+***
+
+
+#### Analysis Plan 
+
+1. Specify the questions you will address. Describe the general topic of your investigation, and state specific questions you will address. Include any relevant information.
+
+General Topic : Emergency Shelters
+Specific Questions:
+  Is the need for Emergency Shelters trending up/down?
+  Are callers able to reach a nearby emergency shelter?
+  Which regions are emergency shelters in high demand?
+  What is the demographic of emergency shelter users?
+  Where would be an optimal place to put another shelter if we could?
+  
+
+2. Specify your data analysis plan. Describe (in words) how you will address these questions using data.
+Are callers able to reach a nearby emergency shelter?
+  To answer this question we need to link 211 caller's postal area to nearby postal areas of emegency shelters. Even though the 211 caller data spans 2017-2019 we can comfortabily use 2019 emergency shelter data since we are concerned with coverage in current year rather than coverage two years ago where there may have been less shelters available.
+
+Which regions are emergency shelters in high demand?
+  For this postal area might be too granular but we can use the emegency shelter data linked with City of Toronto boroughs or neighborhoods to better encapsulate which areas are in high demand all year round
+  
+What is the demographic of emergency shelter users?
+  This is important to know since there are different kinds of emegency shelters and so if we were to build an emegency shelter which demographic should we cater towards since building a women's shelter in an area that needs a family shelter wouldn't be an effective use of resources. We can obtain this information by looking at demand data as well as occupancy data for emergency shelters
+
+Where would be an optimal place to put another shelter if we could?
+  Similar yet different to the last question here we have to consider placing it near the most in demand shelter yet at the same time also adding new coverage to areas that do not have a lot of emergency shelter coverage. We can obatin this by linking the knowledge of the most in-demand areas with the knowledge of areas with the least or no coverage.
+  
+#### Data 
+
+3. Specify your data sources, and the type of information you will use (for external data, provide links/references). For each data source, describe the variables and observations used in your analysis. Identify any potential issues (e.g. bias).
+Currently Used Data
+  Source: 211 Caller Data
+  Usage: Geographical, Caller Reason, Caller demographic, and Caller Gender data  for emergency shelters
+  Variables and Observations
+    Level3Name - Category variable that helps us slice 211 caller data for emergency shelter
+    Level4Name - Category variable to help distingusih different reasons for calling in terms of emergency shelters
+    PostalArea - Postal Codes of Toronto
+    DateOfCall - Date of call
+    NeedWasMet - Boolean specifiying if the needs of the caller was met
+    Demographics of Inquirer - Age Category - Determines if caller is Youth, Adult, Order Adult, or Unknown
+    Demographics of Gender - Age Category - Determines if caller is Male, Female, or Unknown
+  Bias
+    A rather large portion of the PostalArea data is NULL, this may be because a portion of emergency shelters are homeless shelters and disclosing that is a very sensitive topic so the PostalArea data may trend towards other types of shelters
+  
+  Source: Daily Shelter Occupancy (https://open.toronto.ca/dataset/daily-shelter-occupancy/)
+  Usage: Geographical Data on the location of shelters as well as occupancy to calculate demographics and usage
+  Variables and Observations
+    OCCUPANCY_DATE - Date of shelter operation
+    SHELTER_NAME - Name of shelter
+    SHELTER_ADDRESS - Address of shelter
+    SHELTER_POSTAL_CODE - postal code of shelter
+    SECTOR - Categorisation variable for different parts of any paticular shelter
+    OCCUPANCY - The count of occupants in any paticular shelter sector
+  Bias
+    There is possible bias towards families since they wouldn't be counted as a group, so a family group of 4 is not 1 entry but 4 in terms of the OCCUPANCY variable. Though it would still be hard to mangle the variable into a way that would could a single family group since the number of members in a family can range from 2 to more.
+  
+  Source: Toronto Postal Codes (https://www.canadapost.ca/cpo/mc/personal/postalcode/fpc.jsf)
+  Usage: Converting Postcodes to City of Toronto Boroughs and Neighborhoods
+  Variables and Observations
+    Postcode - Postal Codes of Toronto
+    Borough - Boroughs of Toronto
+    Neighborhoods - Neighborhoods of Toronto
+  Bias
+    N/A
+
+Relevant Data
+  Federal funding for housing and homelessness
+    https://data.ontario.ca/dataset/federal-funding-for-housing-and-homelessness
+  One day snapshot of residents (number, percent) in residential facilities for victims of abuse by reason for seeking shelter
+    https://open.canada.ca/data/en/dataset/38340210-57ab-4e4d-89ac-a952042096c4
+  Homeless shelter capacity, bed and shelter counts for emergency shelters, transitional housing and violence against women shelters for Canada and provinces, Employment and Social Development Canada annual (number)
+    https://open.canada.ca/data/en/dataset/1ae08707-1581-47e7-8798-da27906cf9b9
+  Percentage of owner households spending 30% or more income on shelter costs by census division, 2016
+    https://open.canada.ca/data/en/dataset/78af96f9-caac-49bf-83bb-7d6a21676b6e
+  National Service Provider List
+    https://open.canada.ca/data/en/dataset/7e0189e3-8595-4e62-a4e9-4fed6f265e10
+  Women residing in shelters because of spousal abuse
+    https://open.canada.ca/data/en/dataset/df9e27d7-5530-47d1-8aa0-1af90ef7b111\
+  Homeless Shelter Capacity Report
+    https://open.canada.ca/data/en/dataset/5800a008-02b1-4621-bc83-f745ae44931e
+
+
+4. Provide the R code that imports the data into R, and formats them appropriately (this can go to the appendix if it is too lengthy). Submit a copy of your external data files, if any. 
+```{r}
+library(tidyverse)
+library(lubridate)
+read_csv("../data/211 Caller Data - Toronto - Needs - 2017-2019.csv") %>%
+  filter(Level3Name == 'Emergency Shelter') %>%
+  mutate(DateOfCall = as_date(DateOfCall)) ->
+  callerData
+
+read_csv('../data/daily-shelter-occupancy-2019-csv.csv') %>%
+  select(-c(1)) ->
+  shelterData
+
+read_csv("../data/postalcodes.csv") ->
+  postalBorough
+```
+
+
+
+#### Preliminary Results
+
+5. Create at least three data summaries/visualisations which are relevant to your questions, and comment on your results. 
+
+1. Caller + Occpuancy Trend Chart
+```{r}
+callerData %>%
+  group_by(DateOfCall) %>%
+  summarise(numCalls = n()) %>%
+  ggplot(aes(x=DateOfCall, y=numCalls)) + geom_line()
+```
+Here we can see that there is no paticular trend for the number of callers per day, but we can see that it does average to about 9 callers about emergency shelters per day
+
+2. Caller Region Bar Chart
+```{r}
+callerData %>%
+  filter(PostalArea != 'NULL') %>%
+  inner_join(postalBorough, by=c('PostalArea' = 'Postcode')) %>%
+  group_by(Borough) %>%
+  summarise(CallsInBorough = n()) %>%
+  ggplot(aes(x=Borough, y=CallsInBorough)) + geom_bar(stat = 'identity') + coord_flip()
+```
+Unsuprisingly most callers for emergency shelters are in the downtown region as it is both very populated which would increase the use of shelters of all types there
+
+3. Demographic/Occupancy Chart
+```{r}
+shelterData %>%
+  select(OCCUPANCY_DATE, SECTOR, OCCUPANCY) %>%
+  group_by(OCCUPANCY_DATE, SECTOR) %>%
+  summarise(OCCUPANCY = sum(OCCUPANCY)) %>%
+  ggplot(aes(x = OCCUPANCY_DATE, y = OCCUPANCY, colour=SECTOR)) + geom_line()
+```
+Perhaps unsuprisingly the family residences which would house at least more than two people at a time rank the highest, however the number of families in residence in emergency shelters is quite suprising, at least in terms of sheer volume. If we assume that a family is a group of three then there is still as many families in residence of emergency shelters as there are women in emergency shelters.
